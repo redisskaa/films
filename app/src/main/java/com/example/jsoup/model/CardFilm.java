@@ -19,10 +19,6 @@ public class CardFilm {
         this.urlImage = urlImage;
     }
 
-    public CardFilm(String descr) {
-        this.descr = descr;
-    }
-
     public CardFilm() {}
 
     public String getUrl() {

@@ -1,15 +1,19 @@
-package com.example.jsoup;
+package com.example.jsoup.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.jsoup.helpclass.CustomAdapter;
+import com.example.jsoup.helpclass.FetchDataTask;
+import com.example.jsoup.R;
 import com.example.jsoup.helpclass.RecyclerItemClickListener;
 import com.example.jsoup.model.CardFilm;
 
@@ -21,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private CustomAdapter adapter;
     private ArrayList<CardFilm> dataList;
     ListView listView;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         recyclerView = findViewById(R.id.recyclerView);
+        progressBar = findViewById(R.id.pBar);
         dataList = new ArrayList<>();
         adapter = new CustomAdapter(this, dataList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -41,7 +47,11 @@ public class MainActivity extends AppCompatActivity {
                         String url = dataList.get(position).getUrl();
                         String descr = dataList.get(position).getDescr();
 
-                        if (url_image.isEmpty() | title.isEmpty() | url.isEmpty() | descr.isEmpty()){
+                        if (url_image.isEmpty()
+                                | title.isEmpty()
+                                | url.isEmpty()
+                                | descr.isEmpty())
+                        {
                             System.out.println(url_image + ":" + title + ":" + url + ":" + descr);
                             Toast.makeText(MainActivity.this, "Одно из условий не выполнено", Toast.LENGTH_SHORT).show();
                         }else {
@@ -59,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 })
         );
 
-        new FetchDataTask(adapter).execute(url);
+        new FetchDataTask(adapter, progressBar).execute(url);
 
     }
 }

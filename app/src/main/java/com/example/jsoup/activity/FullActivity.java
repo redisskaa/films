@@ -1,4 +1,4 @@
-package com.example.jsoup;
+package com.example.jsoup.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +11,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.jsoup.R;
+import com.example.jsoup.helpclass.CustomAdapter;
+import com.example.jsoup.helpclass.FetchDataTask;
 import com.example.jsoup.model.CardFilm;
 import com.squareup.picasso.Picasso;
 

@@ -1,8 +1,10 @@
-package com.example.jsoup;
+package com.example.jsoup.helpclass;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.text.Html;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.example.jsoup.model.CardFilm;
 
@@ -13,8 +15,15 @@ import org.jsoup.nodes.Element;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FetchDataTask extends AsyncTask<String, Void, List<CardFilm>> {
+public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
     private final CustomAdapter adapter;
+    @SuppressLint("StaticFieldLeak")
+    private ProgressBar progressBar;
+
+    public FetchDataTask(CustomAdapter adapter, ProgressBar pBar) {
+        this.adapter = adapter;
+        this.progressBar = pBar;
+    }
 
     public FetchDataTask(CustomAdapter adapter) {
         this.adapter = adapter;
@@ -59,11 +68,31 @@ public class FetchDataTask extends AsyncTask<String, Void, List<CardFilm>> {
         return dataList;
     }
 
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        if (progressBar != null){
+            progressBar.setVisibility(View.VISIBLE);
+            progressBar.setProgress(0);
+        }
+    }
+
+    @Override
+    protected void onProgressUpdate(Integer... values) {
+        super.onProgressUpdate(values);
+        if (progressBar != null){
+            progressBar.setProgress(values[0]);
+        }
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     @Override
     protected void onPostExecute(List<CardFilm> result) {
         adapter.updateData(result);
         adapter.notifyDataSetChanged();
+        if (progressBar != null){
+            progressBar.setVisibility(View.GONE);
+        }
         super.onPostExecute(result);
     }
 }

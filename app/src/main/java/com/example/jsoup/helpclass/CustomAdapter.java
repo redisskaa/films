@@ -1,4 +1,4 @@
-package com.example.jsoup;
+package com.example.jsoup.helpclass;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.jsoup.R;
 import com.example.jsoup.model.CardFilm;
 import com.squareup.picasso.Picasso;
 

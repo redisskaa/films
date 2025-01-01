@@ -7,24 +7,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:scrollbars="vertical"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="5dp"
-        app:cardPreventCornerOverlap="true"
-        app:cardUseCompatPadding="true">
+    <ProgressBar
+        android:id="@+id/pBar"
+        android:indeterminateDrawable="@drawable/loading"
+        android:layout_gravity="center"
+        android:visibility="visible"
+        android:layout_width="100dp"
+        android:layout_height="100dp"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             tools:listitem="@layout/custom_list_item"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-
-    </androidx.cardview.widget.CardView>
-
-
 
 </LinearLayout>
