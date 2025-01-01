@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">jsoup</string>
+    <string name="todo">TODO</string>
+    <string name="example_title">Загрузка…</string>
+    <string name="raiting">Рейтинг</string>
+    <string name="year">Год</string>
+    <string name="age">Возраст</string>
+    <string name="premiera">Премьера</string>
+    <string name="time">Время</string>
+    <string name="role">В ролях</string>
+    <string name="director">Режиссёр</string>
+    <string name="strana">Страна</string>
+    <string name="janr">Жанр</string>
+</resources>
