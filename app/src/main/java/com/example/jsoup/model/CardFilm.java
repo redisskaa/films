@@ -15,9 +15,6 @@ public class CardFilm {
     }
 
     public String getRating() {
-//        int s = Integer.parseInt(rating);
-//        int res = s / 5;
-//        rating = String.valueOf(res);
         return rating;
     }
 

@@ -63,6 +63,15 @@
                 android:layout_gravity="center|top"
                 android:contentDescription="@string/todo" />
 
+            <Button
+                android:id="@+id/view_film_button"
+                android:layout_gravity="center"
+                android:text="@string/view_string_button"
+                android:textColor="@color/white"
+                android:background="@drawable/button_background"
+                android:layout_width="197dp"
+                android:layout_height="wrap_content"/>
+
             <TextView
                 android:id="@+id/view_descr"
                 android:padding="10dp"
@@ -75,13 +84,6 @@
                 tools:ignore="RtlCompat" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-
-    <WebView
-        android:id="@+id/webView"
-        android:layout_gravity="center"
-        android:layout_margin="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
 
     </LinearLayout>
 

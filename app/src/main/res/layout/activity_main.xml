@@ -7,13 +7,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
-    <ProgressBar
-        android:id="@+id/pBar"
-        android:indeterminateDrawable="@drawable/loading"
-        android:layout_gravity="center"
-        android:visibility="visible"
-        android:layout_width="100dp"
-        android:layout_height="100dp"/>
+        <ProgressBar
+            android:id="@+id/pBar"
+            android:indeterminateDrawable="@drawable/loading"
+            android:layout_gravity="center"
+            android:padding="130dp"
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"

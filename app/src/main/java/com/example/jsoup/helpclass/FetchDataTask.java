@@ -16,12 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
-    private final CustomAdapter adapter;
-    private String title;
-    private String image_url;
-    private String url;
-    private String descr;
-    private String rate;
+    private CustomAdapter adapter;
+
 
     @SuppressLint("StaticFieldLeak")
     private ProgressBar progressBar;
@@ -35,23 +31,32 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
         this.adapter = adapter;
     }
 
+    public FetchDataTask() {
+
+    }
+
     @Override
     protected List<CardFilm> doInBackground(String... urls) {
+
         List<CardFilm> dataList = new ArrayList<>();
+
+        String descr = null;
+
+        String rate = null;
+
         try {
 
             Document document = Jsoup.connect(urls[0]).get();
 
             for (Element element : document.select("div.th-item")) {
-                title = element.select("div.th-desc").select("h2").text();
-                image_url = "https://kinots.org" + element.select("img").attr("src");
-                url = element.select("a").attr("href");
+                String title = element.select("div.th-desc").select("h2").text();
+                String image_url = "https://kinots.org" + element.select("img").attr("src");
+                String url = element.select("a").attr("href");
 
                 Document docfull = Jsoup.connect(url).get();
 
                 for (Element rating : docfull.select("div.rating")) {
                     rate = rating.select("li.current-rating").text();
-                    System.out.println("Рейтинг: " + rate);
                 }
 
                 for (Element element1 : docfull.select("div#dle-content")) {
@@ -65,7 +70,7 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
                     }
                 }
 
-                dataList.add(new CardFilm(title, url , descr, image_url, rate));
+                dataList.add(new CardFilm(title, url, descr, image_url, rate));
             }
 
         } catch (Exception e) {
@@ -100,26 +105,6 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
             progressBar.setVisibility(View.GONE);
         }
         super.onPostExecute(result);
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getImage_url() {
-        return image_url;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public String getDescr() {
-        return descr;
-    }
-
-    public String getRate() {
-        return rate;
     }
 
 }

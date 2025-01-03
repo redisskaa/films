@@ -11,4 +11,6 @@
     <string name="director">Режиссёр</string>
     <string name="strana">Страна</string>
     <string name="janr">Жанр</string>
+    <string name="view_string_button">смотреть фильм</string>
+    <string name="loading_video">Загрузка...</string>
 </resources>
