@@ -39,13 +39,10 @@ public class FullActivity extends Activity {
         textView = findViewById(R.id.view_title_full);
         imgViewFull = findViewById(R.id.view_image_full);
         view_descr = findViewById(R.id.view_descr);
-        buttonView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent filmIntent = new Intent(FullActivity.this, FilmActivity.class);
-                filmIntent.putExtra("url", url);
-                startActivity(filmIntent);
-            }
+        buttonView.setOnClickListener(v -> {
+            Intent filmIntent = new Intent(FullActivity.this, FilmActivity.class);
+            filmIntent.putExtra("url", url);
+            startActivity(filmIntent);
         });
 
         Picasso.get().load(url_image).placeholder(R.drawable.image).into(imgViewFull);
