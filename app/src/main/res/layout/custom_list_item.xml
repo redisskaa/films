@@ -16,7 +16,6 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:scrollbars="vertical"
         app:cardCornerRadius="5dp"
         app:cardPreventCornerOverlap="true"
         app:cardUseCompatPadding="true">
@@ -41,7 +40,6 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:scrollbars="vertical"
         app:cardCornerRadius="5dp"
         app:cardPreventCornerOverlap="true"
         app:cardUseCompatPadding="true">
@@ -50,9 +48,29 @@
             android:id="@+id/view_image"
             android:layout_gravity="center|bottom"
             android:layout_margin="10dp"
-            android:layout_width="198dp"
-            android:layout_height="297dp"
+            android:layout_width="197dp"
+            android:layout_height="298dp"
             android:contentDescription="@string/todo" />
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        app:cardBackgroundColor="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        app:cardCornerRadius="5dp"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="true">
+
+        <RatingBar
+            android:id="@+id/ratingBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="?android:attr/ratingBarStyleIndicator"
+            android:numStars="5"
+            android:rating="0"
+            android:stepSize="1" />
 
     </androidx.cardview.widget.CardView>
 

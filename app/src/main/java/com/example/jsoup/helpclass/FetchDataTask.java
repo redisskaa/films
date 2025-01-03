@@ -17,6 +17,12 @@ import java.util.List;
 
 public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
     private final CustomAdapter adapter;
+    private String title;
+    private String image_url;
+    private String url;
+    private String descr;
+    private String rate;
+
     @SuppressLint("StaticFieldLeak")
     private ProgressBar progressBar;
 
@@ -34,11 +40,6 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
         List<CardFilm> dataList = new ArrayList<>();
         try {
 
-            String title = "";
-            String image_url = "";
-            String url = "";
-            String descr = "";
-
             Document document = Jsoup.connect(urls[0]).get();
 
             for (Element element : document.select("div.th-item")) {
@@ -47,6 +48,11 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
                 url = element.select("a").attr("href");
 
                 Document docfull = Jsoup.connect(url).get();
+
+                for (Element rating : docfull.select("div.rating")) {
+                    rate = rating.select("li.current-rating").text();
+                    System.out.println("Рейтинг: " + rate);
+                }
 
                 for (Element element1 : docfull.select("div#dle-content")) {
                     descr = element1.select("div.descriptionnew").text();
@@ -59,7 +65,7 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
                     }
                 }
 
-                dataList.add(new CardFilm(title, url , descr, image_url));
+                dataList.add(new CardFilm(title, url , descr, image_url, rate));
             }
 
         } catch (Exception e) {
@@ -95,4 +101,25 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
         }
         super.onPostExecute(result);
     }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getImage_url() {
+        return image_url;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getDescr() {
+        return descr;
+    }
+
+    public String getRate() {
+        return rate;
+    }
+
 }
