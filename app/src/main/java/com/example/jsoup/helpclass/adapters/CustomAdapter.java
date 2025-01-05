@@ -1,4 +1,4 @@
-package com.example.jsoup.helpclass;
+package com.example.jsoup.helpclass.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;

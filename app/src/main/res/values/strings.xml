@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">jsoup</string>
+    <string name="app_name">Фильмы онлайн</string>
     <string name="todo">TODO</string>
     <string name="example_title">Загрузка…</string>
     <string name="raiting">Рейтинг</string>
@@ -12,5 +12,8 @@
     <string name="strana">Страна</string>
     <string name="janr">Жанр</string>
     <string name="view_string_button">смотреть фильм</string>
-    <string name="loading_video">Загрузка...</string>
+    <string name="loading_video">Загрузка…</string>
+    <string name="string_pagination">1</string>
+    <string name="url_main">https://kinots.org</string>
+    <string name="next_page_string">следующая страница</string>
 </resources>

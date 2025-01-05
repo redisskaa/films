@@ -1,4 +1,4 @@
-package com.example.jsoup.helpclass;
+package com.example.jsoup.helpclass.asynctask;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
@@ -6,6 +6,7 @@ import android.text.Html;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.example.jsoup.helpclass.adapters.CustomAdapter;
 import com.example.jsoup.model.CardFilm;
 
 import org.jsoup.Jsoup;
@@ -16,9 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
-    private CustomAdapter adapter;
-
-
+    private final CustomAdapter adapter;
     @SuppressLint("StaticFieldLeak")
     private ProgressBar progressBar;
 
@@ -29,10 +28,6 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
 
     public FetchDataTask(CustomAdapter adapter) {
         this.adapter = adapter;
-    }
-
-    public FetchDataTask() {
-
     }
 
     @Override
@@ -84,7 +79,6 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
         super.onPreExecute();
         if (progressBar != null){
             progressBar.setVisibility(View.VISIBLE);
-            progressBar.setProgress(0);
         }
     }
 
@@ -93,6 +87,7 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
         super.onProgressUpdate(values);
         if (progressBar != null){
             progressBar.setProgress(values[0]);
+            System.out.println(values[0]);
         }
     }
 
