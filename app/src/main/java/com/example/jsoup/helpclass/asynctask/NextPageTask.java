@@ -16,10 +16,7 @@ import java.util.List;
 public class NextPageTask extends AsyncTask<String, Integer, List<String>> {
 
     List<String> listPages = new ArrayList<>();
-
-    public List<String> getListPages() {
-        return listPages;
-    }
+    CustomAdapter adapter;
 
     public NextPageTask() {}
 

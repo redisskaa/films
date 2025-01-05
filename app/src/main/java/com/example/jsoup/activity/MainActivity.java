@@ -17,15 +17,22 @@ import com.example.jsoup.helpclass.RecyclerItemClickListener;
 import com.example.jsoup.helpclass.adapters.CustomAdapter;
 import com.example.jsoup.helpclass.adapters.PageAdapter;
 import com.example.jsoup.helpclass.asynctask.FetchDataTask;
-import com.example.jsoup.helpclass.asynctask.NextPageTask;
 import com.example.jsoup.model.CardFilm;
+import com.example.jsoup.model.UniversalListItem;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends Activity {
     private ArrayList<CardFilm> dataList;
-    private String url = "https://kinots.org/filmy/";
+    private final String url = "https://kinots.org/filmy/";
+    CustomAdapter adapter;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +40,9 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        ProgressBar progressBar = findViewById(R.id.pBar);
+        progressBar = findViewById(R.id.pBar);
         Button btnNextPage = findViewById(R.id.button_next_page);
+        adapter = new CustomAdapter(this, dataList);
 
         ///Адаптер и лист для страниц
         List<String> list = new ArrayList<>();
@@ -42,18 +50,14 @@ public class MainActivity extends Activity {
         ///
 
         dataList = new ArrayList<>();
-        CustomAdapter adapter = new CustomAdapter(this, dataList);
+        adapter = new CustomAdapter(this, dataList);
 
         new FetchDataTask(adapter, progressBar).execute(url);
-        new NextPageTask().execute(url);
 
         btnNextPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NextPageTask nextPageTask = new NextPageTask();
-                List<String> strings = nextPageTask.getListPages();
-                System.out.println(strings);
-
+                fetchData();
             }
         });
 
@@ -91,4 +95,73 @@ public class MainActivity extends Activity {
         );
 
     }
+
+    private static String getRandomString(List<String> list, int minPage, int maxPage) {
+        Random random = new Random();
+        int index = random.nextInt(maxPage - minPage + 1) + minPage;
+        System.out.println("getRandomString: " + index);
+        return list.get(index);
+    }
+
+    private static String getRandomString(List<String> list) {
+        Random random = new Random();
+        int index = random.nextInt(list.size());
+        return list.get(index);
+    }
+
+    private void fetchData() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    Document document = Jsoup.connect(url).get();
+
+                    UniversalListItem<String> pagesListObj = new UniversalListItem<>();
+                    ///UniversalListItem<String> urlsObject = new UniversalListItem<>();
+
+                    for (Element pages : document.select("div.navigation").select("a")) {
+                        String page = pages.text(); /// все страницы
+                        pagesListObj.addItem(page);
+                    }
+
+                    ///System.out.println(pagesListObj.getItems()); /// получение листа с номерами страниц
+
+
+//                    for (Element pages : document.select("div.navigation").select("a")) {
+//                        String attr_href = pages.attr("href"); /// ссылки url на страницы
+//                        urlsObject.addItem(attr_href);
+//                    }
+
+                    ///System.out.println(urlsObject.getItems()); /// получение листа с url
+
+                    List<String> urlList = new ArrayList<>();
+                    List<String> pagesList = pagesListObj.getItems();
+
+                    String minS = pagesList.get(0);
+                    String maxS = pagesList.get(pagesList.size() - 1);
+
+                    int min = Integer.parseInt(minS);
+                    int max = Integer.parseInt(maxS);
+
+                    for (int i = 0; i < max; i++) {
+                        urlList.add(url + "page/" + i + "/");
+                    }
+
+                    String randomurl = getRandomString(urlList, min, max);
+                    System.out.println("Рандомная страница: " + randomurl);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            new FetchDataTask(adapter, progressBar).execute(randomurl);
+                        }
+                    });
+                } catch (Exception e) {
+                   e.fillInStackTrace();
+                }
+            }
+        }).start();
+    }
+
 }
