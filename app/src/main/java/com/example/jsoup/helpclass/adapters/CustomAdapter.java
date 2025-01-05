@@ -62,6 +62,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         Picasso.get()
                 .load(data.getUrlImage())
                 .resize(198, 297)
+                .error(R.drawable.image)
                 .placeholder(R.drawable.image)
                 .into(holder.imageView);
     }
