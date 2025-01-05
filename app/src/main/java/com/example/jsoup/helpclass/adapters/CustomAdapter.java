@@ -59,7 +59,11 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
                 break;
         }
 
-        Picasso.get().load(data.getUrlImage()).placeholder(R.drawable.image).into(holder.imageView);
+        Picasso.get()
+                .load(data.getUrlImage())
+                .resize(198, 297)
+                .placeholder(R.drawable.image)
+                .into(holder.imageView);
     }
 
     @Override
