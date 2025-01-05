@@ -1,6 +1,5 @@
 package com.example.jsoup.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -9,6 +8,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,11 +28,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
     private ArrayList<CardFilm> dataList;
     private final String url = "https://kinots.org/filmy/";
     CustomAdapter adapter;
     ProgressBar progressBar;
+    Button btnNextPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +42,7 @@ public class MainActivity extends Activity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         progressBar = findViewById(R.id.pBar);
-        Button btnNextPage = findViewById(R.id.button_next_page);
+        btnNextPage = findViewById(R.id.button_next_page);
         adapter = new CustomAdapter(this, dataList);
 
         ///Адаптер и лист для страниц
@@ -54,12 +55,7 @@ public class MainActivity extends Activity {
 
         new FetchDataTask(adapter, progressBar).execute(url);
 
-        btnNextPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fetchData();
-            }
-        });
+        btnNextPage.setOnClickListener(v -> fetchData());
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
@@ -91,8 +87,7 @@ public class MainActivity extends Activity {
                     public void onLongItemClick(View view, int position) {
                         // do whatever
                     }
-                })
-        );
+                }));
 
     }
 
@@ -100,12 +95,6 @@ public class MainActivity extends Activity {
         Random random = new Random();
         int index = random.nextInt(maxPage - minPage + 1) + minPage;
         System.out.println("getRandomString: " + index);
-        return list.get(index);
-    }
-
-    private static String getRandomString(List<String> list) {
-        Random random = new Random();
-        int index = random.nextInt(list.size());
         return list.get(index);
     }
 
