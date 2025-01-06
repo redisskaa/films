@@ -1,6 +1,8 @@
 package com.example.jsoup.helpclass.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,9 @@ import com.example.jsoup.R;
 import com.example.jsoup.model.CardFilm;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
@@ -75,6 +80,23 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     public void updateData(List<CardFilm> newData) {
         this.dataList.clear();
         this.dataList.addAll(newData);
+    }
+
+    public void saveImage(View view) {
+        ViewHolder viewHolder = new ViewHolder(view);
+        viewHolder.imageView.setDrawingCacheEnabled(true);
+        Bitmap bitmap = Bitmap.createBitmap(viewHolder.imageView.getDrawingCache());
+        viewHolder.imageView.setDrawingCacheEnabled(false);
+
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES); ///папка Pictures
+        ///File storageDir = new File(getFilesDir(), "_saved_image.jpg"); /// папка files
+        File imageFile = new File(storageDir,  "saved_image.jpg"); /// папка files
+
+        try (FileOutputStream fos = new FileOutputStream(imageFile)) {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

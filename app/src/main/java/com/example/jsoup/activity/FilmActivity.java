@@ -2,6 +2,7 @@ package com.example.jsoup.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
@@ -13,6 +14,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+
 import com.example.jsoup.R;
 import com.example.jsoup.video.VideoEnabledWebChromeClient;
 import com.example.jsoup.video.VideoEnabledWebView;
@@ -22,7 +25,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 public class FilmActivity extends Activity {
-    String res;
+    String res = null;
     String url = null;
 
     private VideoEnabledWebView webView;
@@ -37,7 +40,8 @@ public class FilmActivity extends Activity {
         webView = findViewById(R.id.webView);
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        String customUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 YaBrowser/24.12.0.0 Safari/537.36";
+        webSettings.setUserAgentString(customUserAgent);
         Intent intent = getIntent();
         url = intent.getStringExtra("url");
 
@@ -62,6 +66,7 @@ public class FilmActivity extends Activity {
             // Subscribe to standard events, such as onProgressChanged()...
             @Override
             public void onProgressChanged(WebView view, int progress) {
+
             }
         };
 
@@ -85,6 +90,28 @@ public class FilmActivity extends Activity {
 
         webView.setWebChromeClient(webChromeClient);
         webView.setWebViewClient(new ExampleActivity.InsideWebViewClient());
+    }
+
+    private void showYesNoDialog() {
+        AlertDialog.Builder builder = getBuilder();
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private AlertDialog.Builder getBuilder() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Подтверждение");
+        builder.setMessage("К сожелению фильм еще не вышел");
+
+        // Кнопка "Да"
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+        return builder;
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -113,6 +140,13 @@ public class FilmActivity extends Activity {
                     ///System.out.println(res);
                 }
 
+                if (res == null){
+                    for (Element element1 : doc.select("div#dle-content").select("div.fname")) {
+                        //res = element1.select("iframe").attr("src"); /// Извлечение ссылки из src
+                        res = element1.text();
+                    }
+                }
+
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -123,15 +157,20 @@ public class FilmActivity extends Activity {
         @Override
         protected void onPostExecute(String res) {
 //            webView.loadData(res, "text/html", "UTF-8");
-            webView.loadUrl(res);
-            System.out.println("onPostExecute: " + res);
+            if (res == null){
+                System.out.println("onPostExecute: " + null);
+                showYesNoDialog();
+            }else {
+                System.out.println("onPostExecute: " + res);
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                webView.loadUrl(res);
+            }
             super.onPostExecute(res);
         }
 
         @Override
         protected void onPreExecute() {
             fullScreenWebView();
-            Toast.makeText(getApplicationContext(), "Войдите в полноэкранный режим", Toast.LENGTH_SHORT).show();
             super.onPreExecute();
         }
     }

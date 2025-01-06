@@ -1,7 +1,10 @@
 package com.example.jsoup.activity;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -9,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,6 +39,14 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar progressBar;
     Button btnNextPage;
 
+    public final String user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 YaBrowser/24.12.0.0 Safari/537.36";
+
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static final String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,8 +55,7 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         progressBar = findViewById(R.id.pBar);
         btnNextPage = findViewById(R.id.button_next_page);
-        adapter = new CustomAdapter(this, dataList);
-
+        verifyStoragePermissions(this);
         ///Адаптер и лист для страниц
         List<String> list = new ArrayList<>();
         PageAdapter pageAdapter = new PageAdapter(this, list);
@@ -76,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
                             System.out.println(url_image + ":" + title + ":" + url + ":" + descr);
                             Toast.makeText(MainActivity.this, "Данные для работы приложения не были получены, попробуйте позже", Toast.LENGTH_SHORT).show();
                         }else {
+                            //adapter.saveImage(view);
                             intent.putExtra("url_image", url_image);
                             intent.putExtra("title", title);
                             intent.putExtra("url", url);
@@ -91,6 +103,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
+    }
+
     private static String getRandomString(List<String> list, int minPage, int maxPage) {
         Random random = new Random();
         int index = random.nextInt(maxPage - minPage + 1) + minPage;
@@ -104,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 try {
 
-                    Document document = Jsoup.connect(url).get();
+                    Document document = Jsoup.connect(url).userAgent(user_agent).get();
 
                     UniversalListItem<String> pagesListObj = new UniversalListItem<>();
                     ///UniversalListItem<String> urlsObject = new UniversalListItem<>();
@@ -130,8 +155,11 @@ public class MainActivity extends AppCompatActivity {
                     String minS = pagesList.get(0);
                     String maxS = pagesList.get(pagesList.size() - 1);
 
-                    int min = Integer.parseInt(minS);
-                    int max = Integer.parseInt(maxS);
+//                    int min = Integer.parseInt(minS);
+//                    int max = Integer.parseInt(maxS);
+
+                    int min = 1;
+                    int max = 10;
 
                     for (int i = 0; i < max; i++) {
                         urlList.add(url + "page/" + i + "/");
