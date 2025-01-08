@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-
+<LinearLayout android:id="@+id/layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-        <Button
+        <!--<Button
             android:id="@+id/button_next_page"
             android:layout_gravity="center"
             android:layout_margin="15dp"
@@ -15,7 +15,15 @@
             android:textColor="@color/white"
             android:background="@drawable/button_background"
             android:layout_width="200dp"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"/>-->
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/custom_pagination"
+            android:orientation="horizontal" />
 
         <ProgressBar
             android:id="@+id/pBar"

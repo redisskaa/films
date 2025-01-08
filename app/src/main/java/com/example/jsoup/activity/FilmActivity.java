@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -40,7 +39,7 @@ public class FilmActivity extends Activity {
         webView = findViewById(R.id.webView);
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        String customUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 YaBrowser/24.12.0.0 Safari/537.36";
+        String customUserAgent = getResources().getString(R.string.user_agent);
         webSettings.setUserAgentString(customUserAgent);
         Intent intent = getIntent();
         url = intent.getStringExtra("url");
@@ -70,9 +69,21 @@ public class FilmActivity extends Activity {
             }
         };
 
+
         webChromeClient.setOnToggledFullscreen(fullscreen -> {
-            // Your code to handle the full-screen change, for example showing and hiding the title bar. Example:
+
             WindowManager.LayoutParams attrs = getWindow().getAttributes();
+
+//            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//                attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+//                attrs.flags |= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+//                getWindow().setAttributes(attrs);
+//            } else {
+//                attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
+//                attrs.flags &= ~WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+//                getWindow().setAttributes(attrs);
+//                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+//            }
 
             if (fullscreen) {
                 attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
@@ -101,7 +112,7 @@ public class FilmActivity extends Activity {
 
     private AlertDialog.Builder getBuilder() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Подтверждение");
+        builder.setTitle("Информация");
         builder.setMessage("К сожелению фильм еще не вышел");
 
         // Кнопка "Да"
@@ -162,7 +173,7 @@ public class FilmActivity extends Activity {
                 showYesNoDialog();
             }else {
                 System.out.println("onPostExecute: " + res);
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 webView.loadUrl(res);
             }
             super.onPostExecute(res);

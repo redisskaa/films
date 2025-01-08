@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     CustomAdapter adapter;
     ProgressBar progressBar;
     Button btnNextPage;
-
+    List<String> list = new ArrayList<>();
     public final String user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 YaBrowser/24.12.0.0 Safari/537.36";
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -54,19 +54,13 @@ public class MainActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         progressBar = findViewById(R.id.pBar);
-        btnNextPage = findViewById(R.id.button_next_page);
+        //btnNextPage = findViewById(R.id.button_next_page);
         verifyStoragePermissions(this);
-        ///Адаптер и лист для страниц
-        List<String> list = new ArrayList<>();
-        PageAdapter pageAdapter = new PageAdapter(this, list);
-        ///
 
         dataList = new ArrayList<>();
         adapter = new CustomAdapter(this, dataList);
-
+        recycler();
         new FetchDataTask(adapter, progressBar).execute(url);
-
-        btnNextPage.setOnClickListener(v -> fetchData());
 
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerView.setAdapter(adapter);
@@ -122,7 +116,46 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("getRandomString: " + index);
         return list.get(index);
     }
+    private void recycler() {
+        new Thread(() -> {
+            try {
 
+                Document document = Jsoup.connect(url).userAgent(user_agent).get();
+
+                UniversalListItem<String> pagesListObj = new UniversalListItem<>();
+                ///UniversalListItem<String> urlsObject = new UniversalListItem<>();
+
+                for (Element pages : document.select("div.navigation").select("a")) {
+                    String page = pages.text(); /// все страницы
+                    pagesListObj.addItem(page);
+                }
+
+                ///System.out.println(pagesListObj.getItems()); /// получение листа с номерами страниц
+
+
+//                    for (Element pages : document.select("div.navigation").select("a")) {
+//                        String attr_href = pages.attr("href"); /// ссылки url на страницы
+//                        urlsObject.addItem(attr_href);
+//                    }
+
+                ///System.out.println(urlsObject.getItems()); /// получение листа с url
+
+                list = new ArrayList<>(pagesListObj.getItems());
+
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        PageAdapter pageAdapter = new PageAdapter(getApplication(), list);
+                        RecyclerView recyclerPages = findViewById(R.id.recycler);
+                        recyclerPages.setAdapter(pageAdapter);
+                    }
+                });
+            } catch (Exception e) {
+                e.fillInStackTrace();
+            }
+        }).start();
+    }
     private void fetchData() {
         new Thread(new Runnable() {
             @Override
