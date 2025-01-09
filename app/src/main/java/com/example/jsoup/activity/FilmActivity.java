@@ -112,6 +112,7 @@ public class FilmActivity extends Activity {
 
     private AlertDialog.Builder getBuilder() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
         builder.setTitle("Информация");
         builder.setMessage("К сожелению фильм еще не вышел");
 

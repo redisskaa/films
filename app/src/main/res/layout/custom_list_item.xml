@@ -47,7 +47,7 @@
         <ImageView
             android:id="@+id/view_image"
             android:layout_margin="5dp"
-            android:layout_width="168dp"
+            android:layout_width="160dp"
             android:layout_height="250dp"
             android:contentDescription="@string/todo" />
 

@@ -13,7 +13,7 @@
     <string name="janr">Жанр</string>
     <string name="view_string_button">смотреть фильм</string>
     <string name="loading_video">Загрузка…</string>
-    <string name="string_pagination">a</string>
+    <string name="string_pagination">Загрузка…</string>
     <string name="url_main">https://kinots.org</string>
     <string name="next_page_string">следующая страница</string>
     <string name="user_agent">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 YaBrowser/24.12.0.0 Safari/537.36</string>

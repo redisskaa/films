@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jsoup.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PageAdapter extends RecyclerView.Adapter<PageAdapter.ViewHolder>{
@@ -19,7 +20,7 @@ public class PageAdapter extends RecyclerView.Adapter<PageAdapter.ViewHolder>{
 
     public PageAdapter(Context context, List<String> pagesList) {
         this.context = context;
-        this.pagesList = pagesList;
+        this.pagesList = new ArrayList<>(pagesList.subList(0, pagesList.size() - 1));
     }
 
     @NonNull
