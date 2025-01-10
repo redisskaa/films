@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -39,6 +40,7 @@ public class FilmActivity extends Activity {
         webView = findViewById(R.id.webView);
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
+        webSettings.setDomStorageEnabled(true);
         String customUserAgent = getResources().getString(R.string.user_agent);
         webSettings.setUserAgentString(customUserAgent);
         Intent intent = getIntent();
@@ -86,6 +88,7 @@ public class FilmActivity extends Activity {
 //            }
 
             if (fullscreen) {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
                 attrs.flags |= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
                 getWindow().setAttributes(attrs);
@@ -152,12 +155,12 @@ public class FilmActivity extends Activity {
                     ///System.out.println(res);
                 }
 
-                if (res == null){
-                    for (Element element1 : doc.select("div#dle-content").select("div.fname")) {
-                        //res = element1.select("iframe").attr("src"); /// Извлечение ссылки из src
-                        res = element1.text();
-                    }
-                }
+//                if (res == null){
+//                    for (Element element1 : doc.select("div#dle-content").select("div.fname")) {
+//                        //res = element1.select("iframe").attr("src"); /// Извлечение ссылки из src
+//                        res = element1.text();
+//                    }
+//                }
 
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -168,14 +171,14 @@ public class FilmActivity extends Activity {
 
         @Override
         protected void onPostExecute(String res) {
-//            webView.loadData(res, "text/html", "UTF-8");
+
             if (res == null){
                 System.out.println("onPostExecute: " + null);
                 showYesNoDialog();
             }else {
                 System.out.println("onPostExecute: " + res);
-                //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 webView.loadUrl(res);
+                //webView.loadData(res, "text/html", "UTF-8");
             }
             super.onPostExecute(res);
         }

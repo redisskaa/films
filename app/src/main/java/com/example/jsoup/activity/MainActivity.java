@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jsoup.R;
+import com.example.jsoup.helpclass.NetworkCheck;
 import com.example.jsoup.helpclass.RecyclerItemClickListener;
 import com.example.jsoup.helpclass.adapters.CustomAdapter;
 import com.example.jsoup.helpclass.adapters.PageAdapter;
@@ -41,65 +42,68 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         useragent = getResources().getString(R.string.user_agent);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerPages = findViewById(R.id.recycler);
-
-        recyclerPages.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerPages, new RecyclerItemClickListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                int pos = position + 2;
-                setTitle("Страница: " + pos);
-                List<String> list1 = urlsObject.getItems();
-                String url = list1.get(position);
-                System.out.println(url);
-                new FetchDataTask(adapter, progressBar).execute(url);
-            }
-
-            @Override
-            public void onLongItemClick(View view, int position) {
-
-            }
-        }));
-
         progressBar = findViewById(R.id.pBar);
         dataList = new ArrayList<>();
         adapter = new CustomAdapter(this, dataList);
-        recycler();
-        new FetchDataTask(adapter, progressBar).execute(url);
+
+
+        if(NetworkCheck.isNetworkConnected(this)){
+            recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerView,new RecyclerItemClickListener.OnItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position) {
+                    Intent intent = new Intent(getApplicationContext(), FullActivity.class);
+                    String url_image = dataList.get(position).getUrlImage();
+                    String title = dataList.get(position).getTitle();
+                    String url = dataList.get(position).getUrl();
+                    String descr = dataList.get(position).getDescr();
+
+                    if (url_image.isEmpty()
+                            | title.isEmpty()
+                            | url.isEmpty()
+                            | descr.isEmpty())
+                    {
+                        System.out.println(url_image + ":" + title + ":" + url + ":" + descr);
+                        Toast.makeText(MainActivity.this, "Данные для работы приложения не были получены, попробуйте позже", Toast.LENGTH_SHORT).show();
+                    }else {
+                        //adapter.saveImage(view);
+                        intent.putExtra("url_image", url_image);
+                        intent.putExtra("title", title);
+                        intent.putExtra("url", url);
+                        intent.putExtra("descr", descr);
+                        startActivity(intent);
+                    }
+                }
+                @Override
+                public void onLongItemClick(View view, int position) {
+                    // do whatever
+                }
+            }));
+            recycler();
+            new FetchDataTask(adapter, progressBar).execute(url);
+            recyclerPages.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerPages, new RecyclerItemClickListener.OnItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position) {
+                    int pos = position + 2;
+                    setTitle("Страница: " + pos);
+                    List<String> list1 = urlsObject.getItems();
+                    String url = list1.get(position);
+                    System.out.println(url);
+                    new FetchDataTask(adapter, progressBar).execute(url);
+                }
+
+                @Override
+                public void onLongItemClick(View view, int position) {
+
+                }
+            }));
+        }else {
+            Toast.makeText(this, "Похоже у вас проблемы с интернетом", Toast.LENGTH_SHORT).show();
+        }
 
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerView.setAdapter(adapter);
-        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerView,new RecyclerItemClickListener.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        Intent intent = new Intent(getApplicationContext(), FullActivity.class);
-                        String url_image = dataList.get(position).getUrlImage();
-                        String title = dataList.get(position).getTitle();
-                        String url = dataList.get(position).getUrl();
-                        String descr = dataList.get(position).getDescr();
-
-                        if (url_image.isEmpty()
-                                | title.isEmpty()
-                                | url.isEmpty()
-                                | descr.isEmpty())
-                        {
-                            System.out.println(url_image + ":" + title + ":" + url + ":" + descr);
-                            Toast.makeText(MainActivity.this, "Данные для работы приложения не были получены, попробуйте позже", Toast.LENGTH_SHORT).show();
-                        }else {
-                            //adapter.saveImage(view);
-                            intent.putExtra("url_image", url_image);
-                            intent.putExtra("title", title);
-                            intent.putExtra("url", url);
-                            intent.putExtra("descr", descr);
-                            startActivity(intent);
-                        }
-                    }
-                    @Override
-                    public void onLongItemClick(View view, int position) {
-                        // do whatever
-                    }
-                }));
 
     }
 
