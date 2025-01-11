@@ -40,6 +40,17 @@ public class PageAdapter extends RecyclerView.Adapter<PageAdapter.ViewHolder>{
         return pagesList.size();
     }
 
+    public void addItem(String item) {
+        pagesList.add(0, item);
+        notifyItemInserted(pagesList.size() - 1);
+    }
+
+    public void removeItem(int position) {
+        pagesList.remove(position); // Удаляем элемент из списка
+        notifyItemRemoved(position); // Уведомляем адаптер об удалении
+        notifyItemRangeChanged(position, pagesList.size()); // Обновляем оставшиеся элементы
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
 

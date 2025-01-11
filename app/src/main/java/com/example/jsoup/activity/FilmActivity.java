@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -76,30 +76,22 @@ public class FilmActivity extends Activity {
 
             WindowManager.LayoutParams attrs = getWindow().getAttributes();
 
-//            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//                attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
-//                attrs.flags |= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
-//                getWindow().setAttributes(attrs);
-//            } else {
-//                attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
-//                attrs.flags &= ~WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
-//                getWindow().setAttributes(attrs);
-//                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-//            }
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 
-            if (fullscreen) {
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
-                attrs.flags |= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
-                getWindow().setAttributes(attrs);
-                //getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-            } else {
-                finish();
-//                attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
-//                attrs.flags &= ~WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
-//                getWindow().setAttributes(attrs);
-//                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+                if (fullscreen) {
+                    attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+                    attrs.flags |= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+                    getWindow().setAttributes(attrs);
+                } else {
+                    attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
+                    attrs.flags &= ~WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+                    getWindow().setAttributes(attrs);
+                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+                }
+
             }
+
+
         });
 
         webView.setWebChromeClient(webChromeClient);

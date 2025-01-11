@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
+    android:id="@+id/card"
     app:cardBackgroundColor="#423F3F"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    app:cardCornerRadius="5dp"
+    android:layout_width="60dp"
+    android:layout_height="60dp"
+    app:cardCornerRadius="20dp"
     app:cardPreventCornerOverlap="true"
     app:cardUseCompatPadding="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -13,10 +14,9 @@
             android:id="@+id/pageText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
+            android:gravity="center"
             android:textAlignment="center"
             android:textSize="15sp"
-            android:layout_margin="20dp"
             android:text="@string/string_pagination"
             android:textColor="#FFFFFF"
             android:textStyle="bold" />

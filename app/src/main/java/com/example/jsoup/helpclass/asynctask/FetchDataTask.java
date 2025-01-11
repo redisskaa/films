@@ -77,6 +77,7 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+
         if (progressBar != null){
             progressBar.setVisibility(View.VISIBLE);
         }
