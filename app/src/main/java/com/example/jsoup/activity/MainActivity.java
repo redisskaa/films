@@ -99,15 +99,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 int pos = position + 1;
-                String url1 = listUrls.get(position);
-                System.out.println(url);
-
-                new FetchDataTask(adapter, progressBar).execute(url1);
+                String url1 = listUrls.get(pos);
+                System.out.println(url1);
 
                 if (pos > 1){
                     setTitle("Страница: " + pos);
+                    new FetchDataTask(adapter, progressBar).execute(url1);
+                }else {
+                    setTitle("Недавно добавленные");
                 }
-
             }
 
             @Override
