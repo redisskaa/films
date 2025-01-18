@@ -42,7 +42,6 @@
         app:cardPreventCornerOverlap="true"
         app:cardUseCompatPadding="true">
 
-
         <ImageView
             android:id="@+id/view_image"
             android:layout_width="173dp"

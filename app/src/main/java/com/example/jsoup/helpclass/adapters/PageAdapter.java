@@ -45,6 +45,12 @@ public class PageAdapter extends RecyclerView.Adapter<PageAdapter.ViewHolder>{
         notifyItemInserted(pagesList.size() - 1);
     }
 
+    public void addItems(List<String> newItems) {
+        int startPosition = pagesList.size();
+        pagesList.addAll(newItems);
+        notifyItemRangeInserted(startPosition, newItems.size());
+    }
+
     public void removeItem(int position) {
         pagesList.remove(position); // Удаляем элемент из списка
         notifyItemRemoved(position); // Уведомляем адаптер об удалении

@@ -20,8 +20,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:indeterminateDrawable="@drawable/loading"
-            android:padding="130dp"
+            android:indeterminateDrawable="@drawable/spinner"
+            android:padding="160dp"
             android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView

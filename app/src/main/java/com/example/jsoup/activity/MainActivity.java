@@ -18,6 +18,7 @@ import com.example.jsoup.helpclass.adapters.PageAdapter;
 import com.example.jsoup.helpclass.asynctask.FetchDataTask;
 import com.example.jsoup.model.CardFilm;
 import com.example.jsoup.model.UniversalListItem;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -38,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
     List<String> listUrls = new ArrayList<>();
     int limitPages = 102;
     int startPage = 1;
+    PageAdapter pageAdapter;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.pBar);
         dataList = new ArrayList<>();
         adapter = new CustomAdapter(this, dataList);
-
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         list = new ArrayList<>();
 
         for (int i = startPage; i < limitPages; i++) {
@@ -58,9 +61,10 @@ public class MainActivity extends AppCompatActivity {
             listUrls.add(url + "page/" + i + "/");
         }
 
-        PageAdapter pageAdapter = new PageAdapter(getApplication(), list);
+        pageAdapter = new PageAdapter(this, list);
         listUrls.add(0, url);
         recyclerPages.setAdapter(pageAdapter);
+
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerView,new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -106,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
                     setTitle("Страница: " + pos);
                     new FetchDataTask(adapter, progressBar).execute(url1);
                 }else {
+                    new FetchDataTask(adapter, progressBar).execute(url);
                     setTitle("Недавно добавленные");
                 }
             }

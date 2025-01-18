@@ -2,11 +2,12 @@
 <androidx.cardview.widget.CardView
     android:id="@+id/card"
     app:cardBackgroundColor="#423F3F"
-    android:layout_width="60dp"
-    android:layout_height="60dp"
-    app:cardCornerRadius="20dp"
+    android:layout_width="50dp"
+    android:layout_height="50dp"
+    android:layout_margin="5dp"
+    app:cardCornerRadius="50dp"
     app:cardPreventCornerOverlap="true"
-    app:cardUseCompatPadding="true"
+    app:cardUseCompatPadding="false"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
