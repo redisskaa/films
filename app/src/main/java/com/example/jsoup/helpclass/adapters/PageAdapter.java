@@ -40,8 +40,8 @@ public class PageAdapter extends RecyclerView.Adapter<PageAdapter.ViewHolder>{
         return pagesList.size();
     }
 
-    public void addItem(String item) {
-        pagesList.add(0, item);
+    public void addItem(String item, int index) {
+        pagesList.add(index, item);
         notifyItemInserted(pagesList.size() - 1);
     }
 

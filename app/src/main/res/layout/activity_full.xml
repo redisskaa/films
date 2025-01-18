@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
 <LinearLayout
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:scrollbars="vertical"
     android:orientation="vertical"
@@ -19,7 +19,6 @@
         app:cardBackgroundColor="#F8F8F8"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:scrollbars="vertical"
         app:cardCornerRadius="5dp"
         app:cardPreventCornerOverlap="true"
@@ -55,13 +54,7 @@
             android:layout_height="match_parent"
             tools:ignore="UseCompoundDrawables">
 
-            <ImageView
-                android:id="@+id/view_image_full"
-                android:layout_margin="20dp"
-                android:layout_width="198dp"
-                android:layout_height="297dp"
-                android:layout_gravity="center|top"
-                android:contentDescription="@string/todo" />
+            <include layout="@layout/test"/>
 
             <Button
                 android:id="@+id/view_film_button"
