@@ -18,7 +18,6 @@ import com.example.jsoup.helpclass.adapters.PageAdapter;
 import com.example.jsoup.helpclass.asynctask.FetchDataTask;
 import com.example.jsoup.model.CardFilm;
 import com.example.jsoup.model.UniversalListItem;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -29,7 +28,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private ArrayList<CardFilm> dataList;
-    private final String url = "https://kinots.org/filmy/";
+    private final String url = "https://hd.kinotac.net/filmy/";
     CustomAdapter adapter;
     ProgressBar progressBar;
     List<String> list = new ArrayList<>();
@@ -40,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
     int limitPages = 102;
     int startPage = 1;
     PageAdapter pageAdapter;
-    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.pBar);
         dataList = new ArrayList<>();
         adapter = new CustomAdapter(this, dataList);
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
         list = new ArrayList<>();
 
         for (int i = startPage; i < limitPages; i++) {
@@ -68,17 +66,18 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerView,new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
+
                 Intent intent = new Intent(getApplicationContext(), FullActivity.class);
                 String url_image = dataList.get(position).getUrlImage();
                 String title = dataList.get(position).getTitle();
                 String url = dataList.get(position).getUrl();
                 String descr = dataList.get(position).getDescr();
 
+                System.out.println(descr);
+
                 if (url_image.isEmpty()
                         | title.isEmpty()
-                        | url.isEmpty()
-                        | descr.isEmpty())
-                {
+                        | url.isEmpty() | descr == null) {
                     System.out.println(url_image + ":" + title + ":" + url + ":" + descr);
                     Toast.makeText(MainActivity.this, "Данные для работы приложения не были получены, попробуйте позже", Toast.LENGTH_SHORT).show();
                 }else {

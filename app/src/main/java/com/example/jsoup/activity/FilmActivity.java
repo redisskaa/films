@@ -132,7 +132,7 @@ public class FilmActivity extends Activity {
 
                 Document doc = Jsoup.connect(strings[0]).get();
 
-                for (Element element1 : doc.select("div#dle-content").select("div.fplayer")) {
+                for (Element element1 : doc.select("div.fplayer")) {
                     res = element1.select("iframe").attr("src"); /// Извлечение ссылки из src
                     ///res = element1.html(); /// весь код iframe
                     ///res = doc.html(); /// весь код страницы из url

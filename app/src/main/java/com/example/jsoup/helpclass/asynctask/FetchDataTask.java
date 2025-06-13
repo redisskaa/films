@@ -2,7 +2,6 @@ package com.example.jsoup.helpclass.asynctask;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
-import android.text.Html;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -45,7 +44,7 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
 
             for (Element element : document.select("div.th-item")) {
                 String title = element.select("div.th-desc").select("h2").text();
-                String image_url = "https://kinots.org" + element.select("img").attr("src");
+                String image_url = "https://hd.kinotac.net" + element.select("img").attr("src");
                 String url = element.select("a").attr("href");
 
                 Document docfull = Jsoup.connect(url).get();
@@ -54,15 +53,8 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
                     rate = rating.select("li.current-rating").text();
                 }
 
-                for (Element element1 : docfull.select("div#dle-content")) {
+                for (Element element1 : docfull.select("article.full")) {
                     descr = element1.select("div.descriptionnew").text();
-
-                    String html = element1.html();
-                    Element h2 = Jsoup.parse(html).select("h2").first();
-
-                    if (h2 != null){
-                        descr = Html.fromHtml(String.valueOf(h2.nextSibling())).toString();
-                    }
                 }
 
                 dataList.add(new CardFilm(title, url, descr, image_url, rate));
