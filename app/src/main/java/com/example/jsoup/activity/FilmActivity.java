@@ -2,7 +2,6 @@ package com.example.jsoup.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
@@ -112,12 +111,7 @@ public class FilmActivity extends Activity {
         builder.setMessage("К сожелению фильм еще не вышел");
 
         // Кнопка "Да"
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                finish();
-            }
-        });
+        builder.setPositiveButton("OK", (dialog, which) -> finish());
         return builder;
     }
 
@@ -169,7 +163,7 @@ public class FilmActivity extends Activity {
                 showYesNoDialog();
             }else {
                 System.out.println("onPostExecute: " + res);
-                webView.loadUrl(res);
+                webView.loadUrl("https:" + res);
                 //webView.loadData(res, "text/html", "UTF-8");
             }
             super.onPostExecute(res);

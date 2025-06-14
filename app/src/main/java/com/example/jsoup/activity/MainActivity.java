@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
     List<String> list = new ArrayList<>();
     private String useragent;
     RecyclerView recyclerPages;
-    UniversalListItem<String> urlsObject;
     List<String> listUrls = new ArrayList<>();
     int limitPages = 102;
     int startPage = 1;
@@ -147,9 +146,7 @@ public class MainActivity extends AppCompatActivity {
 //                    urlsObject.addItem(attr_href);
 //                }
 
-                runOnUiThread(() -> {
-                    System.out.println("UI Thread");
-                });
+                runOnUiThread(() -> System.out.println("UI Thread"));
             } catch (Exception e) {
                 e.fillInStackTrace();
             }

@@ -133,7 +133,7 @@ public class FullActivity extends Activity {
                         }
 
                     }else {
-                        tViewRaiting.setText("0.0");
+                        tViewRaiting.setText("Нет информации");
                         tViewYear.setText(infoList.get(1));
                         tViewAge.setText(infoList.get(2));
                         tViewJanr.setText(infoList.get(3));

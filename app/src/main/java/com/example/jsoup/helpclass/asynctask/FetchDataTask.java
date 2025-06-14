@@ -11,6 +11,7 @@ import com.example.jsoup.model.CardFilm;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +26,6 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
         this.progressBar = pBar;
     }
 
-    public FetchDataTask(CustomAdapter adapter) {
-        this.adapter = adapter;
-    }
-
     @Override
     protected List<CardFilm> doInBackground(String... urls) {
 
@@ -40,6 +37,19 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
 
         try {
 
+//            String html_test = "<div class=\"descriptionnew\" itemprop=\"description\">\n" +
+//                    "<h2 class=\"fsubtitle\">Охотники за молниями - смотреть онлайн в качестве Full HD</h2>\n" +
+//                    "Мия Ибарра — инженер-электрик, которая отчаянно стремится сделать карьеру и получить повышение по службе. " +
+//                    "Она отправляется на Аляску, в местный исследовательский центр по изучению молний, " +
+//                    "задавшись целью превратить их в мощный источник возобновляемой энергии. " +
+//                    "Там Мия обнаруживает, что исследователь в центре всего один — самоуверенный и одержимый " +
+//                    "фантазиями Лукас Флетчер, который с помощью подручных средств пытается укротить стихию.\n" +
+//                    "</div>";
+//            Document doc = Jsoup.parse(html_test);
+//            Elements elements = doc.select("h2.fsubtitle");
+//            elements.remove(); // Удаление элемента
+//            System.out.println("Конечный код: " + doc.html());
+//
             Document document = Jsoup.connect(urls[0]).get();
 
             for (Element element : document.select("div.th-item")) {
@@ -53,8 +63,14 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
                     rate = rating.select("li.current-rating").text();
                 }
 
-                for (Element element1 : docfull.select("article.full")) {
-                    descr = element1.select("div.descriptionnew").text();
+                Document parserHtml = Jsoup.parse(docfull.html());
+
+                for (Element element1 : parserHtml.select("article.full")) {
+                    Elements elements_all = element1.select("div.descriptionnew");
+                    Elements elements = elements_all.select("h2.fsubtitle");
+                    elements.empty();// Удаление
+                    descr = elements_all.select("div.descriptionnew").text();
+                    System.out.println("Конечный код парсера: " + descr);
                 }
 
                 dataList.add(new CardFilm(title, url, descr, image_url, rate));
