@@ -66,9 +66,6 @@ public class ExampleActivity extends Activity
         webView.setWebChromeClient(webChromeClient);
         // Call private class InsideWebViewClient
         webView.setWebViewClient(new InsideWebViewClient());
-        
-        // Navigate anywhere you want, but consider that this classes have only been tested on YouTube's mobile site
-        webView.loadUrl("https://kinots.org/23035-illyuziya-kontrolya.html");
 
     }
 
