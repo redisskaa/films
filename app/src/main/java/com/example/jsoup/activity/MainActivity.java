@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jsoup.R;
+import com.example.jsoup.helpclass.NetworkCheck;
 import com.example.jsoup.helpclass.RecyclerItemClickListener;
 import com.example.jsoup.helpclass.adapters.CustomAdapter;
 import com.example.jsoup.helpclass.adapters.PageAdapter;
@@ -94,8 +95,13 @@ public class MainActivity extends AppCompatActivity {
             }
         }));
 
-        recycler();
-        new FetchDataTask(adapter, progressBar).execute(url);
+        if (NetworkCheck.isNetworkConnected(this)){
+            recycler();
+            new FetchDataTask(adapter, progressBar).execute(url);
+        }else {
+            Toast.makeText(this, "Отсутствует интернет", Toast.LENGTH_SHORT).show();
+        }
+
         setTitle("Недавно добавленные");
         recyclerPages.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerPages, new RecyclerItemClickListener.OnItemClickListener() {
             @Override

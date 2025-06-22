@@ -1,6 +1,5 @@
 package com.example.jsoup.activity;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -17,7 +16,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -48,8 +46,6 @@ public class FullActivity extends Activity {
         infoList = new ArrayList<>();
         getData();
     }
-
-    @SuppressLint("SetJavaScriptEnabled")
     public void getData(){
         Intent intent = getIntent();
         url = intent.getStringExtra("url");
@@ -78,7 +74,11 @@ public class FullActivity extends Activity {
             startActivity(filmIntent);
         });
 
-        Picasso.get().load(url_image).error(R.drawable.image).placeholder(R.drawable.image).into(imgViewFull);
+        Picasso.get()
+                .load(url_image)
+                .error(R.drawable.image)
+                .placeholder(R.drawable.image)
+                .into(imgViewFull);
         textView.setText(title);
         view_descr.setText(descr);
     }
@@ -151,7 +151,7 @@ public class FullActivity extends Activity {
                     System.out.println("UI Thread 2");
                     System.out.println(Arrays.toString(infoList.toArray()));
                 });
-            } catch (IndexOutOfBoundsException | IOException e) {
+            } catch (IndexOutOfBoundsException e) {
                 e.fillInStackTrace();
             }
         }).start();

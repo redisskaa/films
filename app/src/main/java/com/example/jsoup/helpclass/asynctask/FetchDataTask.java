@@ -1,10 +1,13 @@
 package com.example.jsoup.helpclass.asynctask;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import com.example.jsoup.helpclass.NetworkCheck;
 import com.example.jsoup.helpclass.adapters.CustomAdapter;
 import com.example.jsoup.model.CardFilm;
 
@@ -37,19 +40,6 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
 
         try {
 
-//            String html_test = "<div class=\"descriptionnew\" itemprop=\"description\">\n" +
-//                    "<h2 class=\"fsubtitle\">Охотники за молниями - смотреть онлайн в качестве Full HD</h2>\n" +
-//                    "Мия Ибарра — инженер-электрик, которая отчаянно стремится сделать карьеру и получить повышение по службе. " +
-//                    "Она отправляется на Аляску, в местный исследовательский центр по изучению молний, " +
-//                    "задавшись целью превратить их в мощный источник возобновляемой энергии. " +
-//                    "Там Мия обнаруживает, что исследователь в центре всего один — самоуверенный и одержимый " +
-//                    "фантазиями Лукас Флетчер, который с помощью подручных средств пытается укротить стихию.\n" +
-//                    "</div>";
-//            Document doc = Jsoup.parse(html_test);
-//            Elements elements = doc.select("h2.fsubtitle");
-//            elements.remove(); // Удаление элемента
-//            System.out.println("Конечный код: " + doc.html());
-//
             Document document = Jsoup.connect(urls[0]).get();
 
             for (Element element : document.select("div.th-item")) {
@@ -59,18 +49,19 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
 
                 Document docfull = Jsoup.connect(url).get();
 
+                /// Получение рейтинга
                 for (Element rating : docfull.select("div.rating")) {
                     rate = rating.select("li.current-rating").text();
                 }
 
                 Document parserHtml = Jsoup.parse(docfull.html());
 
+                /// Удаление лишнего из описания фильма
                 for (Element element1 : parserHtml.select("article.full")) {
                     Elements elements_all = element1.select("div.descriptionnew");
                     Elements elements = elements_all.select("h2.fsubtitle");
                     elements.empty();// Удаление
                     descr = elements_all.select("div.descriptionnew").text();
-                    System.out.println("Конечный код парсера: " + descr);
                 }
 
                 dataList.add(new CardFilm(title, url, descr, image_url, rate));
@@ -103,11 +94,19 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
     @SuppressLint("NotifyDataSetChanged")
     @Override
     protected void onPostExecute(List<CardFilm> result) {
-        adapter.updateData(result);
-        adapter.notifyDataSetChanged();
-        if (progressBar != null){
-            progressBar.setVisibility(View.GONE);
+
+        Context context = progressBar.getContext();
+
+        if (NetworkCheck.isNetworkConnected(context)){
+            adapter.updateData(result);
+            adapter.notifyDataSetChanged();
+            if (progressBar != null){
+                progressBar.setVisibility(View.GONE);
+            }
+        }else {
+            Toast.makeText(context, "Отсутствует интернет", Toast.LENGTH_SHORT).show();
         }
+
         super.onPostExecute(result);
     }
 
