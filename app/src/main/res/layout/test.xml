@@ -1,166 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp"
-    android:stretchColumns="2">
-
-    <ImageView
-        android:id="@+id/view_image_full"
-        android:layout_gravity="center"
-        android:layout_width="173dp"
-        android:layout_height="259dp"
-        android:layout_margin="5dp"
-        android:contentDescription="@string/todo" />
-
-    <TableRow>
-<LinearLayout
     android:orientation="vertical"
-    android:layout_gravity="start|center"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:padding="8dp">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/raitingTv"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:layout_columnWeight="1"
-        android:text="@string/raiting" />
+        android:text="Рейтинг: —"
+        android:textSize="14sp" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/yearTv"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:layout_columnWeight="1"
-        android:text="@string/janr" />
+        android:text="Год: —"
+        android:textSize="14sp" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/ageTv"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:layout_columnWeight="1"
-        android:text="@string/year" />
+        android:text="Возраст: —"
+        android:textSize="14sp" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/janrTv"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:layout_columnWeight="1"
-        android:text="@string/age" />
+        android:text="Жанр: —"
+        android:textSize="14sp" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/stranaTv"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:layout_columnWeight="1"
-        android:text="@string/strana" />
+        android:text="Страна: —"
+        android:textSize="14sp" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/directorTv"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:layout_columnWeight="1"
-        android:text="@string/director" />
+        android:text="Режиссёр: —"
+        android:textSize="14sp" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/roleTv"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:layout_columnWeight="1"
-        android:text="@string/role" />
+        android:text="В ролях: —"
+        android:textSize="14sp" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/timeTv"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:layout_columnWeight="1"
-        android:text="@string/time" />
+        android:text="Время: —"
+        android:textSize="14sp" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/premieraTv"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:layout_columnWeight="1"
-        android:text="@string/premiera" />
+        android:text="Премьера: —"
+        android:textSize="14sp" />
 
 </LinearLayout>
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_gravity="start|center"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/raitingTv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:layout_columnWeight="1"
-                android:text="@string/todo" />
-
-            <TextView
-                android:id="@+id/janrTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:layout_columnWeight="1"
-                android:text="@string/todo" />
-
-            <TextView
-                android:id="@+id/yearTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:layout_columnWeight="1"
-                android:text="@string/todo" />
-
-            <TextView
-                android:id="@+id/ageTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:layout_columnWeight="1"
-                android:text="@string/todo" />
-
-            <TextView
-                android:id="@+id/stranaTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:layout_columnWeight="1"
-                android:text="@string/todo" />
-
-            <TextView
-                android:id="@+id/directorTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:layout_columnWeight="1"
-                android:text="@string/todo" />
-
-            <TextView
-                android:id="@+id/roleTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:layout_columnWeight="1"
-                android:text="@string/todo" />
-
-            <TextView
-                android:id="@+id/timeTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:layout_columnWeight="1"
-                android:text="@string/todo" />
-
-            <TextView
-                android:id="@+id/premieraTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:layout_columnWeight="1"
-                android:text="@string/todo" />
-        </LinearLayout>
-    </TableRow>
-</TableLayout>

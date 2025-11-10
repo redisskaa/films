@@ -2,11 +2,15 @@ package com.example.jsoup.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.jsoup.R;
@@ -18,142 +22,188 @@ import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 public class FullActivity extends Activity {
 
-    String url, title, url_image, descr, page;
-    TextView textView, view_descr;
-    ImageView imgViewFull;
-    Button buttonView;
-    TextView tViewRaiting,
-            tViewYear,
-            tViewAge,
-            tViewJanr,
-            tViewStrana,
-            tViewDirector,
-            tViewRole,
-            tViewTime,
-            tViewPremiera;
-    List<String> infoList;
+    private TextView textViewTitle, view_descr;
+    private Button buttonView;
+    private ImageView imgViewFull;
+    private ProgressBar progressBar;
+
+    private final int[] textViewIds = {
+            R.id.raitingTv, R.id.yearTv, R.id.ageTv, R.id.janrTv,
+            R.id.stranaTv, R.id.directorTv, R.id.roleTv, R.id.timeTv, R.id.premieraTv
+    };
+    private TextView[] infoTextViews;
+
+    private String url, title, url_image;
+    private SharedPreferences cache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_full);
+        setContentView(R.layout.activity_full); // ← ПЕРВЫЙ!
+
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-        infoList = new ArrayList<>();
-        getData();
+        cache = getSharedPreferences("FilmCache", MODE_PRIVATE);
+
+        initViews();
+        getIntentData();
+        loadFilmDetails();
+        setupWatchButton();
     }
-    public void getData(){
+
+    private void initViews() {
+        textViewTitle = findViewById(R.id.view_title_full);
+        imgViewFull = findViewById(R.id.view_image_full);
+        view_descr = findViewById(R.id.view_descr);
+        buttonView = findViewById(R.id.view_film_button);
+        progressBar = findViewById(R.id.progressBar);
+
+        infoTextViews = new TextView[textViewIds.length];
+        for (int i = 0; i < textViewIds.length; i++) {
+            int id = textViewIds[i];
+            infoTextViews[i] = findViewById(id);
+            if (infoTextViews[i] == null) {
+                Log.e("FullActivity", "TextView НЕ НАЙДЕН: " + getResources().getResourceEntryName(id));
+            } else {
+                Log.d("FullActivity", "TextView найден: " + getResources().getResourceEntryName(id));
+            }
+        }
+    }
+
+    private void getIntentData() {
         Intent intent = getIntent();
         url = intent.getStringExtra("url");
         title = intent.getStringExtra("title");
         url_image = intent.getStringExtra("url_image");
-        descr = intent.getStringExtra("descr");
-        buttonView = findViewById(R.id.view_film_button);
-        textView = findViewById(R.id.view_title_full);
-        imgViewFull = findViewById(R.id.view_image_full);
-        view_descr = findViewById(R.id.view_descr);
 
-        tViewRaiting = findViewById(R.id.raitingTv);
-        tViewYear = findViewById(R.id.yearTv);
-        tViewAge = findViewById(R.id.ageTv);
-        tViewJanr = findViewById(R.id.janrTv);
-        tViewStrana = findViewById(R.id.stranaTv);
-        tViewDirector = findViewById(R.id.directorTv);
-        tViewRole = findViewById(R.id.roleTv);
-        tViewTime = findViewById(R.id.timeTv);
-        tViewPremiera = findViewById(R.id.premieraTv);
+        if (textViewTitle != null) {
+            textViewTitle.setText(title);
+        }
 
-        getInfo();
-        buttonView.setOnClickListener(v -> {
-            Intent filmIntent = new Intent(FullActivity.this, FilmActivity.class);
-            filmIntent.putExtra("url", url);
-            startActivity(filmIntent);
-        });
-
-        Picasso.get()
-                .load(url_image)
-                .error(R.drawable.image)
-                .placeholder(R.drawable.image)
-                .into(imgViewFull);
-        textView.setText(title);
-        view_descr.setText(descr);
+        if (imgViewFull != null) {
+            if (url_image != null && !url_image.isEmpty()) {
+                Picasso.get()
+                        .load(url_image)
+                        .error(R.drawable.image)
+                        .placeholder(R.drawable.image)
+                        .fit()
+                        .centerCrop()
+                        .into(imgViewFull);
+            } else {
+                imgViewFull.setImageResource(R.drawable.image);
+            }
+        }
     }
 
-    private void getInfo() {
+    private void loadFilmDetails() {
+        if (url == null || url.isEmpty()) {
+            showError("Нет ссылки на фильм");
+            return;
+        }
+
+        // === КЭШ ===
+        String cachedData = cache.getString(url, null);
+        if (cachedData != null) {
+            String[] parts = cachedData.split(";;;");
+            if (parts.length >= 10) {
+                runOnUiThread(() -> {
+                    view_descr.setText(parts[0]);
+                    List<String> info = Arrays.asList(parts).subList(1, 10);
+                    updateInfoFields(info);
+                });
+                return;
+            }
+        }
+
+        if (progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
         new Thread(() -> {
             try {
+                Document doc = Jsoup.connect(url)
+                        .userAgent("Mozilla/5.0 (Linux; Android 10; Pixel 3)")
+                        .timeout(10000)
+                        .get();
 
-                Document document = Jsoup.connect(url).get();
+                String descr = parseDescription(doc);
+                List<String> info = parseInfoList(doc);
 
-                for (Element pages : document.select("div.item").select("div.info")) {
-                    page = pages.text(); /// все страницы
-                    infoList.add(page);
-                }
-
-                System.out.println(page);
-                System.out.println("Размер: " + infoList.size());
-
-                Iterator<String> iterator = infoList.iterator();
-                while (iterator.hasNext()) {
-                    String value = iterator.next();
-                    if (value.equals("Скоро на сайте")) {
-                        iterator.remove(); // Удаляем элемент через итератор
-                        System.out.println("Размер: " + infoList.size());
-                    }
-                }
+                // === СОХРАНЕНИЕ В КЭШ ===
+                StringBuilder cacheData = new StringBuilder(descr);
+                for (String s : info) cacheData.append(";;;").append(s);
+                cache.edit().putString(url, cacheData.toString()).apply();
 
                 runOnUiThread(() -> {
-
-                    if (infoList.size() == 9){
-                        tViewRaiting.setText(infoList.get(0));
-                        tViewYear.setText(infoList.get(1));
-                        tViewAge.setText(infoList.get(2));
-                        tViewJanr.setText(infoList.get(3));
-                        tViewStrana.setText(infoList.get(4));
-                        tViewDirector.setText(infoList.get(5));
-                        tViewRole.setText(infoList.get(6));
-                        tViewTime.setText(infoList.get(7));
-                        tViewPremiera.setText(infoList.get(8));
-                        System.out.println("Размер: " + infoList.size());
-
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            tViewRaiting.setTooltipText(infoList.get(0));
-                            tViewYear.setTooltipText(infoList.get(1));
-                            tViewAge.setTooltipText(infoList.get(2));
-                            tViewJanr.setTooltipText(infoList.get(3));
-                            tViewStrana.setTooltipText(infoList.get(4));
-                            tViewDirector.setTooltipText(infoList.get(5));
-                            tViewRole.setTooltipText(infoList.get(6));
-                            tViewTime.setTooltipText(infoList.get(7));
-                            tViewPremiera.setTooltipText(infoList.get(8));
-                        }
-
-                    }else {
-                        tViewRaiting.setText("Нет информации");
-                        tViewYear.setText(infoList.get(1));
-                        tViewAge.setText(infoList.get(2));
-                        tViewJanr.setText(infoList.get(3));
-                        tViewStrana.setText(infoList.get(4));
-                        tViewDirector.setText(infoList.get(5));
-                        tViewRole.setText(infoList.get(6));
-                        tViewTime.setText(infoList.get(7));
-                        tViewPremiera.setText("Нет информации");
-
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            tViewPremiera.setTooltipText(tViewPremiera.getText());
-                        }
-                    }
-
-                    System.out.println("UI Thread 2");
-                    System.out.println(Arrays.toString(infoList.toArray()));
+                    if (progressBar != null) progressBar.setVisibility(View.GONE);
+                    if (view_descr != null) view_descr.setText(descr);
+                    updateInfoFields(info);
                 });
-            } catch (IndexOutOfBoundsException e) {
-                e.fillInStackTrace();
+
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    if (progressBar != null) progressBar.setVisibility(View.GONE);
+                    showError("Нет сети или сервер недоступен");
+                });
+                Log.e("FullActivity", "Ошибка загрузки", e);
             }
         }).start();
+    }
+
+    private String parseDescription(Document doc) {
+        Element block = doc.selectFirst("div.descriptionnew");
+        if (block == null) return "Описание отсутствует.";
+        block.select("h2.fsubtitle").remove();
+        String text = block.text().trim();
+        return text.isEmpty() ? "Описание отсутствует." : text;
+    }
+
+    private List<String> parseInfoList(Document doc) {
+        List<String> info = new ArrayList<>();
+        for (Element item : doc.select("div.item div.info")) {
+            String text = item.text().trim();
+            if (!text.isEmpty() && !text.equals("Скоро на сайте")) {
+                info.add(text);
+            }
+        }
+        while (info.size() < 9) info.add("Нет информации");
+        return info;
+    }
+
+    private void updateInfoFields(List<String> info) {
+        if (info == null || info.size() < 9 || infoTextViews == null) {
+            Log.e("FullActivity", "updateInfoFields: данные неполные");
+            return;
+        }
+
+        for (int i = 0; i < infoTextViews.length; i++) {
+            TextView tv = infoTextViews[i];
+            if (tv != null) {
+                String value = info.get(i);
+                tv.setText(value);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    tv.setTooltipText(value);
+                }
+            }
+        }
+    }
+
+    private void showError(String message) {
+        if (view_descr != null) {
+            view_descr.setText(message);
+        }
+    }
+
+    private void setupWatchButton() {
+        if (buttonView != null) {
+            buttonView.setOnClickListener(v -> {
+                Intent intent = new Intent(this, FilmActivity.class);
+                intent.putExtra("url", url);
+                startActivity(intent);
+            });
+        }
     }
 }

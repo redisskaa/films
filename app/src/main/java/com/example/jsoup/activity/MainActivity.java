@@ -3,6 +3,8 @@ package com.example.jsoup.activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -26,10 +28,12 @@ import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
     private ArrayList<CardFilm> dataList;
-    private final String url = "https://hd.kinotac.net/filmy/";
+    private final String url = "https://kinotac.org/filmy/";
     CustomAdapter adapter;
     ProgressBar progressBar;
     List<String> list = new ArrayList<>();
@@ -39,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     int limitPages = 102;
     int startPage = 1;
     PageAdapter pageAdapter;
+    private final ExecutorService executor = Executors.newFixedThreadPool(3); // 3 потока
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,9 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
                 System.out.println(descr);
 
-                if (url_image.isEmpty()
-                        | title.isEmpty()
-                        | url.isEmpty() | descr == null) {
+                if (url_image.isEmpty() | title.isEmpty() | url.isEmpty() | descr == null) {
                     System.out.println(url_image + ":" + title + ":" + url + ":" + descr);
                     Toast.makeText(MainActivity.this, "Данные для работы приложения не были получены, попробуйте позже", Toast.LENGTH_SHORT).show();
                 }else {
@@ -85,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("url_image", url_image);
                     intent.putExtra("title", title);
                     intent.putExtra("url", url);
-                    intent.putExtra("descr", descr);
                     startActivity(intent);
                 }
             }
@@ -128,6 +131,45 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
+    public void startRatingLoading(List<CardFilm> films) {
+        for (CardFilm film : films) {
+            executor.execute(() -> {
+                String rating = fetchRating(film.getUrl());
+                film.setRating(rating); // Обновляем модель
+
+                mainHandler.post(() -> {
+                    int position = dataList.indexOf(film);
+                    if (position != -1) {
+                        adapter.notifyItemChanged(position);
+                    }
+                });
+            });
+        }
+    }
+
+    private String fetchRating(String filmUrl) {
+        try {
+            Document doc = Jsoup.connect(filmUrl)
+                    .userAgent("Mozilla/5.0")
+                    .timeout(8000)
+                    .get();
+
+            Element ratingEl = doc.selectFirst("li.current-rating");
+            if (ratingEl != null) {
+                String text = ratingEl.text();
+                try {
+                    int r = Integer.parseInt(text);
+                    return String.valueOf(r); // 85 → "85"
+                } catch (Exception e) {
+                    return "0";
+                }
+            }
+        } catch (Exception e) {
+            // Игнорируем ошибку — просто "0"
+        }
+        return "0";
+    }
+
     public String getUseragent() {
         return useragent;
     }
@@ -145,12 +187,6 @@ public class MainActivity extends AppCompatActivity {
                     String page = pages.text(); /// все страницы
                     pagesListObj.addItem(page);
                 }
-
-
-//                for (Element pages : document.select("div.navigation").select("a")) {
-//                    String attr_href = pages.attr("href"); /// ссылки url на страницы
-//                    urlsObject.addItem(attr_href);
-//                }
 
                 runOnUiThread(() -> System.out.println("UI Thread"));
             } catch (Exception e) {

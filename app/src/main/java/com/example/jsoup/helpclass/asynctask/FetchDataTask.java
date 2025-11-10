@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.jsoup.activity.MainActivity;
 import com.example.jsoup.helpclass.NetworkCheck;
 import com.example.jsoup.helpclass.adapters.CustomAdapter;
 import com.example.jsoup.model.CardFilm;
@@ -21,6 +22,7 @@ import java.util.List;
 
 public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
     private final CustomAdapter adapter;
+    private static final String BASE_DOMAIN = "https://kinotac.org";
     @SuppressLint("StaticFieldLeak")
     private ProgressBar progressBar;
 
@@ -31,44 +33,31 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
 
     @Override
     protected List<CardFilm> doInBackground(String... urls) {
-
         List<CardFilm> dataList = new ArrayList<>();
 
-        String descr = null;
-
-        String rate = null;
-
         try {
+            Document document = Jsoup.connect(urls[0]).userAgent("Mozilla/5.0").get();
 
-            Document document = Jsoup.connect(urls[0]).get();
+            Elements items = document.select("div.th-item");
+            for (Element item : items) {
+                String title = item.selectFirst("div.th-desc h2") != null ? item.selectFirst("div.th-desc h2").text() : "Без названия";
+                String url = item.selectFirst("a") != null ? item.selectFirst("a").attr("href") : "";
+                String descr = item.select(".descriptionnew").text(); // Исправлено: поиск по классу
+                String ratingText = item.selectFirst(".current-rating") != null ? item.selectFirst(".current-rating").text() : "0";
 
-            for (Element element : document.select("div.th-item")) {
-                String title = element.select("div.th-desc").select("h2").text();
-                String image_url = "https://hd.kinotac.net" + element.select("img").attr("src");
-                String url = element.select("a").attr("href");
-
-                Document docfull = Jsoup.connect(url).get();
-
-                /// Получение рейтинга
-                for (Element rating : docfull.select("div.rating")) {
-                    rate = rating.select("li.current-rating").text();
+                // Изображение — внутри текущего th-item
+                String imageUrl = null;
+                Element meta = item.selectFirst("meta[itemprop=image]");
+                if (meta != null) {
+                    String content = meta.attr("content");
+                    imageUrl = normalizeImageUrl(content, BASE_DOMAIN);
                 }
 
-                Document parserHtml = Jsoup.parse(docfull.html());
-
-                /// Удаление лишнего из описания фильма
-                for (Element element1 : parserHtml.select("article.full")) {
-                    Elements elements_all = element1.select("div.descriptionnew");
-                    Elements elements = elements_all.select("h2.fsubtitle");
-                    elements.empty();// Удаление
-                    descr = elements_all.select("div.descriptionnew").text();
-                }
-
-                dataList.add(new CardFilm(title, url, descr, image_url, rate));
+                dataList.add(new CardFilm(title, url, descr, imageUrl, ratingText));
             }
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         return dataList;
     }
@@ -76,8 +65,7 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-
-        if (progressBar != null){
+        if (progressBar != null) {
             progressBar.setVisibility(View.VISIBLE);
         }
     }
@@ -85,29 +73,40 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
     @Override
     protected void onProgressUpdate(Integer... values) {
         super.onProgressUpdate(values);
-        if (progressBar != null){
+        if (progressBar != null) {
             progressBar.setProgress(values[0]);
-            System.out.println(values[0]);
         }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     @Override
     protected void onPostExecute(List<CardFilm> result) {
+        Context context = progressBar != null ? progressBar.getContext() : null;
 
-        Context context = progressBar.getContext();
-
-        if (NetworkCheck.isNetworkConnected(context)){
+        if (context != null && NetworkCheck.isNetworkConnected(context)) {
             adapter.updateData(result);
             adapter.notifyDataSetChanged();
-            if (progressBar != null){
+            if (context instanceof MainActivity) {
+                ((MainActivity) context).startRatingLoading(result);
+            }
+            if (progressBar != null) {
                 progressBar.setVisibility(View.GONE);
             }
-        }else {
+        } else if (context != null) {
             Toast.makeText(context, "Отсутствует интернет", Toast.LENGTH_SHORT).show();
         }
 
         super.onPostExecute(result);
     }
 
+    public static String normalizeImageUrl(String url, String baseDomain) {
+        if (url == null || url.isEmpty()) {
+            return null;
+        }
+        if (url.toLowerCase().startsWith("http://") || url.toLowerCase().startsWith("https://")) {
+            return url;
+        }
+        url = url.replaceAll("^/+", "");
+        return baseDomain + "/" + url;
+    }
 }

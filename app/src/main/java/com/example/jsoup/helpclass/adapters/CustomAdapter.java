@@ -38,26 +38,23 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
 
         CardFilm data = dataList.get(position);
         holder.textView.setText(data.getTitle());
+        System.out.println("Ссылка:" + data.getUrlImage());
 
-        int getRate = Integer.parseInt(data.getRating());
-        System.out.println("onBindViewHolder:" + getRate);
+        System.out.println("onBindViewHolder:" + data.getRating());
 
-        switch (getRate){
-            case 20:
-                holder.ratingBar.setRating(1);
-                break;
-            case 40:
-                holder.ratingBar.setRating(2);
-                break;
-            case 60:
-                holder.ratingBar.setRating(3);
-                break;
-            case 80:
-                holder.ratingBar.setRating(4);
-                break;
-            case 100:
-                holder.ratingBar.setRating(5);
-                break;
+        String ratingStr = data.getRating();
+        int rating = 0;
+        try {
+            rating = Integer.parseInt(ratingStr);
+        } catch (Exception e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+
+        if (rating > 0 && rating <= 100) {
+            holder.ratingBar.setRating(rating / 20f); // 100 → 5.0
+            holder.ratingBar.setVisibility(View.VISIBLE);
+        } else {
+            System.out.println("К сожелению рейтинг равен 0");
         }
 
         Picasso.get()
