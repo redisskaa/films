@@ -17,4 +17,7 @@
     <string name="url_main">https://hd.kinotac.net</string>
     <string name="next_page_string">следующая страница</string>
     <string name="user_agent">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 YaBrowser/24.12.0.0 Safari/537.36</string>
+    <string name="favorite">Избранное</string>
+    <string name="string_comment">Комментарий</string>
+    <string name="string_author">Автор</string>
 </resources>

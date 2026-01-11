@@ -1,3 +1,4 @@
+// FullActivity.java
 package com.example.jsoup.activity;
 
 import android.app.Activity;
@@ -12,14 +13,19 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.jsoup.R;
+import com.example.jsoup.model.CardFilm;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +33,7 @@ import java.util.List;
 public class FullActivity extends Activity {
 
     private TextView textViewTitle, view_descr;
-    private Button buttonView;
+    private Button buttonView, buttonFavorite;
     private ImageView imgViewFull;
     private ProgressBar progressBar;
 
@@ -39,6 +45,10 @@ public class FullActivity extends Activity {
 
     private String url, title, url_image;
     private SharedPreferences cache;
+    private SharedPreferences favoritesPref;
+    private CardFilm currentFilm;
+
+    ImageView favoriteImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +57,13 @@ public class FullActivity extends Activity {
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
         cache = getSharedPreferences("FilmCache", MODE_PRIVATE);
+        favoritesPref = getSharedPreferences("Favorites", MODE_PRIVATE);
 
         initViews();
         getIntentData();
         loadFilmDetails();
         setupWatchButton();
+        setupFavoriteButton();
     }
 
     private void initViews() {
@@ -60,6 +72,7 @@ public class FullActivity extends Activity {
         view_descr = findViewById(R.id.view_descr);
         buttonView = findViewById(R.id.view_film_button);
         progressBar = findViewById(R.id.progressBar);
+        favoriteImage = findViewById(R.id.favoriteStar);
 
         infoTextViews = new TextView[textViewIds.length];
         for (int i = 0; i < textViewIds.length; i++) {
@@ -87,10 +100,9 @@ public class FullActivity extends Activity {
             if (url_image != null && !url_image.isEmpty()) {
                 Picasso.get()
                         .load(url_image)
+                        .fit()
                         .error(R.drawable.image)
                         .placeholder(R.drawable.image)
-                        .fit()
-                        .centerCrop()
                         .into(imgViewFull);
             } else {
                 imgViewFull.setImageResource(R.drawable.image);
@@ -109,10 +121,13 @@ public class FullActivity extends Activity {
         if (cachedData != null) {
             String[] parts = cachedData.split(";;;");
             if (parts.length >= 10) {
+                String descr = parts[0];
+                List<String> info = Arrays.asList(parts).subList(1, 10);
                 runOnUiThread(() -> {
-                    view_descr.setText(parts[0]);
-                    List<String> info = Arrays.asList(parts).subList(1, 10);
+                    view_descr.setText(descr);
                     updateInfoFields(info);
+                    currentFilm = new CardFilm(title, url, descr, url_image, info.get(0));
+                    updateFavoriteButton();
                 });
                 return;
             }
@@ -141,6 +156,8 @@ public class FullActivity extends Activity {
                     if (progressBar != null) progressBar.setVisibility(View.GONE);
                     if (view_descr != null) view_descr.setText(descr);
                     updateInfoFields(info);
+                    currentFilm = new CardFilm(title, url, descr, url_image, info.get(0));
+                    updateFavoriteButton();
                 });
 
             } catch (Exception e) {
@@ -179,11 +196,27 @@ public class FullActivity extends Activity {
             return;
         }
 
+        String[] labels = {
+                getString(R.string.raiting),
+                getString(R.string.year),
+                getString(R.string.age),
+                getString(R.string.janr),
+                getString(R.string.strana),
+                getString(R.string.director),
+                getString(R.string.role),
+                getString(R.string.time),
+                getString(R.string.premiera)
+        };
+
         for (int i = 0; i < infoTextViews.length; i++) {
             TextView tv = infoTextViews[i];
             if (tv != null) {
                 String value = info.get(i);
-                tv.setText(value);
+                String label = labels[i];
+
+                String displayText = label + " " + value;
+                tv.setText(displayText);
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     tv.setTooltipText(value);
                 }
@@ -205,5 +238,63 @@ public class FullActivity extends Activity {
                 startActivity(intent);
             });
         }
+    }
+
+    private void setupFavoriteButton() {
+
+        if (favoriteImage != null){
+            favoriteImage.setOnClickListener(v -> {
+                toggleFavorite();
+            });
+        }
+    }
+
+    private void updateFavoriteButton() {
+        if (favoriteImage != null) {
+            if (isFavorite()) {
+                favoriteImage.setImageResource(R.drawable.star3);
+            } else {
+                favoriteImage.setImageResource(R.drawable.star2);
+            }
+        }
+    }
+
+    private boolean isFavorite() {
+        List<CardFilm> favorites = getFavorites();
+        for (CardFilm film : favorites) {
+            if (film.getUrl().equals(url)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void toggleFavorite() {
+        List<CardFilm> favorites = getFavorites();
+        if (isFavorite()) {
+            favorites.removeIf(film -> film.getUrl().equals(url));
+            Toast.makeText(this, "Удалено из избранного", Toast.LENGTH_SHORT).show();
+        } else {
+            favorites.add(currentFilm);
+            Toast.makeText(this, "Добавлено в избранное", Toast.LENGTH_SHORT).show();
+        }
+        saveFavorites(favorites);
+        updateFavoriteButton();
+    }
+
+    private List<CardFilm> getFavorites() {
+        String json = favoritesPref.getString("favorites_list", null);
+        if (json != null) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<ArrayList<CardFilm>>(){}.getType();
+            return gson.fromJson(json, type);
+        }
+        return new ArrayList<>();
+    }
+
+    private void saveFavorites(List<CardFilm> favorites) {
+        Gson gson = new Gson();
+        String json = gson.toJson(favorites);
+        favoritesPref.edit().putString("favorites_list", json).apply();
     }
 }

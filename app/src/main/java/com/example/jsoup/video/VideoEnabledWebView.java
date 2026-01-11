@@ -9,24 +9,12 @@ import android.util.Log;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
+import androidx.annotation.NonNull;
+
 import java.util.Map;
 
-/**
- * This class serves as a WebView to be used in conjunction with a VideoEnabledWebChromeClient.
- * It makes possible:
- * - To detect the HTML5 video ended event so that the VideoEnabledWebChromeClient can exit full-screen.
- *
- * Important notes:
- * - Javascript is enabled by default and must not be disabled with getSettings().setJavaScriptEnabled(false).
- * - setWebChromeClient() must be called before any loadData(), loadDataWithBaseURL() or loadUrl() method.
- *
- * @author Cristian Perez (http://cpr.name)
- *
- */
-public class VideoEnabledWebView extends WebView
-{
-    public class JavascriptInterface
-    {
+public class VideoEnabledWebView extends WebView {
+    public class JavascriptInterface {
         @android.webkit.JavascriptInterface @SuppressWarnings("unused")
         public void notifyVideoEnd() // Must match Javascript interface method of VideoEnabledWebChromeClient
         {
@@ -49,21 +37,18 @@ public class VideoEnabledWebView extends WebView
     private VideoEnabledWebChromeClient videoEnabledWebChromeClient;
     private boolean addedJavascriptInterface;
 
-    @SuppressWarnings("unused")
     public VideoEnabledWebView(Context context)
     {
         super(context);
         addedJavascriptInterface = false;
     }
 
-    @SuppressWarnings("unused")
     public VideoEnabledWebView(Context context, AttributeSet attrs)
     {
         super(context, attrs);
         addedJavascriptInterface = false;
     }
 
-    @SuppressWarnings("unused")
     public VideoEnabledWebView(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
@@ -74,7 +59,6 @@ public class VideoEnabledWebView extends WebView
      * Indicates if the video is being displayed using a custom view (typically full-screen)
      * @return true it the video is being displayed using a custom view (typically full-screen)
      */
-    @SuppressWarnings("unused")
     public boolean isVideoFullscreen()
     {
         return videoEnabledWebChromeClient != null && videoEnabledWebChromeClient.isVideoFullscreen();
@@ -97,28 +81,28 @@ public class VideoEnabledWebView extends WebView
     }
 
     @Override
-    public void loadData(String data, String mimeType, String encoding)
+    public void loadData(@NonNull String data, String mimeType, String encoding)
     {
         addJavascriptInterface();
         super.loadData(data, mimeType, encoding);
     }
 
     @Override
-    public void loadDataWithBaseURL(String baseUrl, String data, String mimeType, String encoding, String historyUrl)
+    public void loadDataWithBaseURL(String baseUrl, @NonNull String data, String mimeType, String encoding, String historyUrl)
     {
         addJavascriptInterface();
         super.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
     }
 
     @Override
-    public void loadUrl(String url)
+    public void loadUrl(@NonNull String url)
     {
         addJavascriptInterface();
         super.loadUrl(url);
     }
 
     @Override
-    public void loadUrl(String url, Map<String, String> additionalHttpHeaders)
+    public void loadUrl(@NonNull String url, @NonNull Map<String, String> additionalHttpHeaders)
     {
         addJavascriptInterface();
         super.loadUrl(url, additionalHttpHeaders);

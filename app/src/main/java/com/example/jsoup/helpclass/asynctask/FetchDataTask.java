@@ -25,10 +25,12 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
     private static final String BASE_DOMAIN = "https://kinotac.org";
     @SuppressLint("StaticFieldLeak")
     private ProgressBar progressBar;
+    private final boolean isAppend;
 
-    public FetchDataTask(CustomAdapter adapter, ProgressBar pBar) {
+    public FetchDataTask(CustomAdapter adapter, ProgressBar pBar, boolean isAppend) {
         this.adapter = adapter;
         this.progressBar = pBar;
+        this.isAppend = isAppend;
     }
 
     @Override
@@ -40,17 +42,20 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
 
             Elements items = document.select("div.th-item");
             for (Element item : items) {
-                String title = item.selectFirst("div.th-desc h2") != null ? item.selectFirst("div.th-desc h2").text() : "Без названия";
-                String url = item.selectFirst("a") != null ? item.selectFirst("a").attr("href") : "";
-                String descr = item.select(".descriptionnew").text(); // Исправлено: поиск по классу
-                String ratingText = item.selectFirst(".current-rating") != null ? item.selectFirst(".current-rating").text() : "0";
+                // Безопасные вызовы с проверкой на null
+                String title = getTextOrDefault(item.selectFirst("div.th-desc h2"), "Без названия");
+                String url = getAttrOrEmpty(item.selectFirst("a"));
+                String descr = item.select(".descriptionnew").text(); // Может быть пустым, но не null
+                String ratingText = getTextOrDefault(item.selectFirst(".current-rating"), "0");
 
-                // Изображение — внутри текущего th-item
+                // Изображение — с проверкой на null
                 String imageUrl = null;
                 Element meta = item.selectFirst("meta[itemprop=image]");
                 if (meta != null) {
-                    String content = meta.attr("content");
-                    imageUrl = normalizeImageUrl(content, BASE_DOMAIN);
+                    String content = meta.attr("content"); // Теперь безопасно
+                    if (!content.isEmpty()) {
+                        imageUrl = normalizeImageUrl(content, BASE_DOMAIN);
+                    }
                 }
 
                 dataList.add(new CardFilm(title, url, descr, imageUrl, ratingText));
@@ -83,11 +88,28 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
     protected void onPostExecute(List<CardFilm> result) {
         Context context = progressBar != null ? progressBar.getContext() : null;
 
+
+
         if (context != null && NetworkCheck.isNetworkConnected(context)) {
-            adapter.updateData(result);
+            if (isAppend) {
+                adapter.addData(result);
+            } else {
+                adapter.updateData(result);
+            }
             adapter.notifyDataSetChanged();
             if (context instanceof MainActivity) {
-                ((MainActivity) context).startRatingLoading(result);
+                MainActivity activity = (MainActivity) context;
+                activity.startRatingLoading(result);
+
+                if (activity.currentPage == 1) {
+                    activity.setTitle("Недавно добавленные");
+
+                } else {
+                    activity.setTitle("Страница: " + activity.currentPage);
+                }
+                if (isAppend) {
+                    activity.isLoading = false;
+                }
             }
             if (progressBar != null) {
                 progressBar.setVisibility(View.GONE);
@@ -109,4 +131,14 @@ public class FetchDataTask extends AsyncTask<String, Integer, List<CardFilm>> {
         url = url.replaceAll("^/+", "");
         return baseDomain + "/" + url;
     }
+
+    // Вспомогательные методы для безопасности
+    private String getTextOrDefault(Element element, String defaultValue) {
+        return element != null ? element.text() : defaultValue;
+    }
+
+    private String getAttrOrEmpty(Element element) {
+        return element != null ? element.attr("href") : "";
+    }
+
 }

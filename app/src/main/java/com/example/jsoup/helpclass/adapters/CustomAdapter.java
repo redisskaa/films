@@ -73,6 +73,13 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     public void updateData(List<CardFilm> newData) {
         this.dataList.clear();
         this.dataList.addAll(newData);
+        notifyDataSetChanged();
+    }
+
+    public void addData(List<CardFilm> newData) {
+        int start = dataList.size();
+        this.dataList.addAll(newData);
+        notifyItemRangeInserted(start, newData.size());
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

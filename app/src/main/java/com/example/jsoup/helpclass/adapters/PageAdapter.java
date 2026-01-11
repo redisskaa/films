@@ -14,47 +14,30 @@ import com.example.jsoup.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PageAdapter extends RecyclerView.Adapter<PageAdapter.ViewHolder>{
+public class PageAdapter extends RecyclerView.Adapter<PageAdapter.ViewHolder> {
     private final Context context;
     private final List<String> pagesList;
 
     public PageAdapter(Context context, List<String> pagesList) {
         this.context = context;
-        this.pagesList = new ArrayList<>(pagesList.subList(0, pagesList.size() - 1));
+        this.pagesList = new ArrayList<>(pagesList);
     }
 
     @NonNull
     @Override
-    public PageAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.custom_pagination, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PageAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.textView.setText(pagesList.get(position));
     }
 
     @Override
     public int getItemCount() {
         return pagesList.size();
-    }
-
-    public void addItem(String item, int index) {
-        pagesList.add(index, item);
-        notifyItemInserted(pagesList.size() - 1);
-    }
-
-    public void addItems(List<String> newItems) {
-        int startPosition = pagesList.size();
-        pagesList.addAll(newItems);
-        notifyItemRangeInserted(startPosition, newItems.size());
-    }
-
-    public void removeItem(int position) {
-        pagesList.remove(position); // Удаляем элемент из списка
-        notifyItemRemoved(position); // Уведомляем адаптер об удалении
-        notifyItemRangeChanged(position, pagesList.size()); // Обновляем оставшиеся элементы
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

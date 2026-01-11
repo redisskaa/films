@@ -8,6 +8,7 @@ import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
+
 import com.example.jsoup.R;
 import com.example.jsoup.video.VideoEnabledWebChromeClient;
 import com.example.jsoup.video.VideoEnabledWebView;
@@ -28,7 +29,7 @@ public class ExampleActivity extends Activity
 
         // Initialize the VideoEnabledWebChromeClient and set event handlers
         View nonVideoLayout = findViewById(R.id.nonVideoLayout); // Your own view, read class comments
-        ViewGroup videoLayout = (ViewGroup)findViewById(R.id.videoLayout); // Your own view, read class comments
+        ViewGroup videoLayout = findViewById(R.id.videoLayout); // Your own view, read class comments
         //noinspection all
         View loadingView = getLayoutInflater().inflate(R.layout.view_loading_video, null); // Your own view, read class comments
         webChromeClient = new VideoEnabledWebChromeClient(nonVideoLayout, videoLayout, loadingView, webView) // See all available constructors...
@@ -78,7 +79,7 @@ public class ExampleActivity extends Activity
             return true;
         }
     }
-    
+
     @Override
     public void onBackPressed()
     {

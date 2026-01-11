@@ -5,12 +5,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -26,7 +28,6 @@ import org.jsoup.nodes.Element;
 public class FilmActivity extends Activity {
     String res = null;
     String url = null;
-
     private VideoEnabledWebView webView;
     private VideoEnabledWebChromeClient webChromeClient;
 
@@ -94,7 +95,19 @@ public class FilmActivity extends Activity {
         });
 
         webView.setWebChromeClient(webChromeClient);
-        webView.setWebViewClient(new ExampleActivity.InsideWebViewClient());
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                // Автоматически войти в полноэкранный режим для видео
+                String js = "(function() { var video = document.getElementsByTagName('video')[0]; if (video) { video.requestFullscreen(); } })()";
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    view.evaluateJavascript(js, null);
+                } else {
+                    view.loadUrl("javascript:" + js);
+                }
+            }
+        });
     }
 
     private void showYesNoDialog() {
@@ -126,27 +139,22 @@ public class FilmActivity extends Activity {
 
                 Document doc = Jsoup.connect(strings[0]).get();
 
+                // В doInBackground():
                 for (Element element1 : doc.select("div.fplayer")) {
-                    res = element1.select("iframe").attr("src"); /// Извлечение ссылки из src
-                    ///res = element1.html(); /// весь код iframe
-                    ///res = doc.html(); /// весь код страницы из url
-
-//                    res = "<iframe " + "src=\"" + res + "\" " + "allow=\"autoplay *; fullscreen\" " + "width=\"640\" " + "height=\"360\" " +
-//                            "allowfullscreen=\"\" " +
-//                            "webkitallowfullscreen=\"\" " +
-//                            "mozallowfullscreen=\"\" " +
-//                            "oallowfullscreen=\"\" " +
-//                            "msallowfullscreen=\"\">" +
-//                            "</iframe>";
-                    ///System.out.println(res);
+                    Element iframe = element1.selectFirst("iframe");
+                    if (iframe != null) {
+                        res = iframe.attr("src");
+                        break;
+                    }
                 }
 
-//                if (res == null){
-//                    for (Element element1 : doc.select("div#dle-content").select("div.fname")) {
-//                        //res = element1.select("iframe").attr("src"); /// Извлечение ссылки из src
-//                        res = element1.text();
-//                    }
-//                }
+                // Если не найден — fallback
+                if (res == null || res.isEmpty()) {
+                    Element fname = doc.selectFirst("div#dle-content div.fname");
+                    if (fname != null) {
+                        res = fname.text(); // или другой fallback
+                    }
+                }
 
             } catch (Exception e) {
                 System.out.println(e.getMessage());
